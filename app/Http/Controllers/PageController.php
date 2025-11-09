@@ -88,7 +88,6 @@ class PageController extends Controller
         $data = $request->all();
         
         if ($request->hasFile('gambar')) {
-            // Hapus gambar lama jika ada
             if ($destinasi->gambar_url && file_exists(public_path($destinasi->gambar_url))) {
                 unlink(public_path($destinasi->gambar_url));
             }
@@ -106,7 +105,6 @@ class PageController extends Controller
     public function destinasiDelete($id) {
         $destinasi = DestinasiWisata::findOrFail($id);
         
-        // Hapus gambar jika ada
         if ($destinasi->gambar_url && file_exists(public_path($destinasi->gambar_url))) {
             unlink(public_path($destinasi->gambar_url));
         }
