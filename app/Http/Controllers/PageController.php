@@ -56,7 +56,7 @@ class PageController extends Controller
         if ($request->hasFile('gambar')) {
             $file = $request->file('gambar');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $file->storeAs('destinasi', $filename);
+            $file->storeAs('destinasi', $filename, "public");
             $data['gambar_url'] = 'storage/destinasi/' . $filename;
         }
 

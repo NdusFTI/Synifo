@@ -21,7 +21,7 @@
         <div class="card destination-card h-100">
           <div style="position: relative; overflow: hidden;">
             @if($item->gambar_url)
-              <img src="{{ $item->gambar_url }}" class="card-img-top" alt="{{ $item->nama_destinasi }}">
+              <img src="{{ asset($item->gambar_url) }}" class="card-img-top" alt="{{ $item->nama_destinasi }}">
             @else
               <div style="height: 220px; background: linear-gradient(135deg, #f0f0f0 0%, #fafafa 100%);" class="d-flex align-items-center justify-content-center">
                 <i class="bi bi-image" style="font-size: 4rem; color: #ccc;"></i>

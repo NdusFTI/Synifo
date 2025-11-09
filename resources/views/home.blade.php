@@ -59,7 +59,7 @@
               <div class="col-md-6 col-lg-4 mb-4">
                 <div class="card destination-card h-100" onclick="window.location.href='{{ route('destinasi.show', $destinasi->id) }}'">
                   @if($destinasi->gambar_url)
-                    <img src="{{ $destinasi->gambar_url }}" class="card-img-top" alt="{{ $destinasi->nama_destinasi }}">
+                    <img src="{{ asset($destinasi->gambar_url) }}" class="card-img-top" alt="{{ $destinasi->nama_destinasi }}">
                   @else
                     <div style="height: 220px; background: linear-gradient(135deg, #f0f0f0 0%, #fafafa 100%);" class="d-flex align-items-center justify-content-center">
                       <i class="bi bi-image" style="font-size: 4rem; color: #ccc;"></i>

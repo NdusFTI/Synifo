@@ -17,7 +17,7 @@
       <div class="card">
         <div style="overflow: hidden; max-height: 500px;">
           @if($destinasi->gambar_url)
-            <img src="{{ $destinasi->gambar_url }}" alt="{{ $destinasi->nama_destinasi }}" class="img-fluid w-100" style="object-fit: cover;">
+            <img src="{{ asset($destinasi->gambar_url) }}" alt="{{ $destinasi->nama_destinasi }}" class="img-fluid w-100" style="object-fit: cover;">
           @else
             <div style="height: 400px; background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%);" class="d-flex align-items-center justify-content-center">
               <i class="bi bi-image" style="font-size: 6rem; color: #999;"></i>
