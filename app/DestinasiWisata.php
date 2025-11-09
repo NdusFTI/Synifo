@@ -9,7 +9,6 @@ class DestinasiWisata extends Model
     protected $table = "destinasi_wisata";
 
     protected $fillable = [
-        'íd',
         'nama_destinasi',
         'lokasi',
         'deskripsi',
