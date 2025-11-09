@@ -47,10 +47,20 @@ class PageController extends Controller
             'deskripsi' => 'required',
             'lokasi' => 'required',
             'kategori' => 'required',
-            'rating' => 'required|numeric|min:0|max:5'
+            'rating' => 'required|numeric|min:0|max:5',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
-        DestinasiWisata::create($request->all());
+        $data = $request->all();
+        
+        if ($request->hasFile('gambar')) {
+            $file = $request->file('gambar');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->storeAs('destinasi', $filename);
+            $data['gambar_url'] = 'storage/destinasi/' . $filename;
+        }
+
+        DestinasiWisata::create($data);
         return redirect()->route('destinasi.index')->with('success', 'Destinasi berhasil ditambahkan!');
     }
 
@@ -70,16 +80,37 @@ class PageController extends Controller
             'deskripsi' => 'required',
             'lokasi' => 'required',
             'kategori' => 'required',
-            'rating' => 'required|numeric|min:0|max:5'
+            'rating' => 'required|numeric|min:0|max:5',
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
         $destinasi = DestinasiWisata::findOrFail($id);
-        $destinasi->update($request->all());
+        $data = $request->all();
+        
+        if ($request->hasFile('gambar')) {
+            // Hapus gambar lama jika ada
+            if ($destinasi->gambar_url && file_exists(public_path($destinasi->gambar_url))) {
+                unlink(public_path($destinasi->gambar_url));
+            }
+            
+            $file = $request->file('gambar');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->storeAs('public/destinasi', $filename);
+            $data['gambar_url'] = 'storage/destinasi/' . $filename;
+        }
+
+        $destinasi->update($data);
         return redirect()->route('destinasi.index')->with('success', 'Destinasi berhasil diupdate!');
     }
 
     public function destinasiDelete($id) {
         $destinasi = DestinasiWisata::findOrFail($id);
+        
+        // Hapus gambar jika ada
+        if ($destinasi->gambar_url && file_exists(public_path($destinasi->gambar_url))) {
+            unlink(public_path($destinasi->gambar_url));
+        }
+        
         $destinasi->delete();
         return redirect()->route('destinasi.index')->with('success', 'Destinasi berhasil dihapus!');
     }
