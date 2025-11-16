@@ -102,32 +102,6 @@
             </div>
           </div>
         </div>
-
-        <div class="card">
-          <div class="card-body">
-            <h5 class="mb-3">Aksi</h5>
-
-            <a href="{{ route('destinasi.edit', $destinasi->id) }}" class="btn btn-warning btn-block mb-2">
-              <i class="bi bi-pencil"></i>
-              Edit Destinasi
-            </a>
-
-            <form action="{{ route('destinasi.destroy', $destinasi->id) }}" method="POST"
-              onsubmit="return confirm('Apakah Anda yakin ingin menghapus destinasi ini?')">
-              @csrf
-              @method('DELETE')
-              <button type="submit" class="btn btn-danger btn-block mb-3">
-                <i class="bi bi-trash"></i>
-                Hapus Destinasi
-              </button>
-            </form>
-
-            <a href="{{ route('destinasi.index') }}" class="btn btn-secondary btn-block">
-              <i class="bi bi-arrow-left"></i>
-              Kembali
-            </a>
-          </div>
-        </div>
       </div>
     </div>
   </div>
