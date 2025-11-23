@@ -11,7 +11,7 @@
 |
 */
 
-Route::get("/", "PageController@home")->name('home');
+Route::get("/dashboard", "PageController@home")->name('home');
 Route::get("/destinasi", "PageController@destinasi")->name('destinasi.index');
 Route::get("/destinasi/create", "PageController@destinasiCreate")->name('destinasi.create');
 Route::post("/destinasi", "PageController@destinasiStore")->name('destinasi.store');
@@ -24,3 +24,6 @@ Route::get("/users", "PageController@users")->name('users.index');
 Route::get("/users/create", "PageController@usersCreate")->name('users.create');
 Route::post("/users", "PageController@usersStore")->name('users.store');
 Route::delete("/users/{id}", "PageController@usersDelete")->name('users.destroy');
+
+Route::get("/", "PageController@login")->name('login');
+Route::post("/login", "PageController@loginPost")->name('login.post');
