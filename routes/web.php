@@ -19,3 +19,8 @@ Route::get("/destinasi/{id}", "PageController@destinasiShow")->name('destinasi.s
 Route::get("/destinasi/{id}/edit", "PageController@destinasiEdit")->name('destinasi.edit');
 Route::put("/destinasi/{id}", "PageController@destinasiUpdate")->name('destinasi.update');
 Route::delete("/destinasi/{id}", "PageController@destinasiDelete")->name('destinasi.destroy');
+
+Route::get("/users", "PageController@users")->name('users.index');
+Route::get("/users/create", "PageController@usersCreate")->name('users.create');
+Route::post("/users", "PageController@usersStore")->name('users.store');
+Route::delete("/users/{id}", "PageController@usersDelete")->name('users.destroy');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\DestinasiWisata;
+use App\User;
 
 class PageController extends Controller
 {
@@ -31,6 +32,8 @@ class PageController extends Controller
             'kategoriBadges'
         ));
     }
+
+    // Destinasi Methods
 
     public function destinasi() {
         $destinasi = DestinasiWisata::all();
@@ -111,5 +114,50 @@ class PageController extends Controller
         
         $destinasi->delete();
         return redirect()->route('destinasi.index')->with('success', 'Destinasi berhasil dihapus!');
+    }
+
+    // User Methods
+
+    public function users() {
+        $users = User::all();
+        return view("users.index", compact('users'));
+    }
+
+    public function usersCreate() {
+        return view("users.create");
+    }
+
+    public function usersStore(Request $request) {
+        $this->validate($request, [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+        ]);
+        
+        $data = $request->all();
+
+        $data['password'] = bcrypt($data['password']);
+
+        if ($request->hasFile('photo')) {
+            $file = $request->file('photo');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->storeAs('users', $filename, "public");
+            $data['photo'] = 'storage/users/' . $filename;
+        }
+
+        User::create($data);
+        return redirect()->route('users.index')->with('success', 'User berhasil ditambahkan!');
+    }
+
+    public function usersDelete($id) {
+        $user = User::findOrFail($id);
+        
+        if ($user->photo && file_exists(public_path($user->photo))) {
+            unlink(public_path($user->photo));
+        }
+        
+        $user->delete();
+        return redirect()->route('users.index')->with('success', 'User berhasil dihapus!');
     }
 }
