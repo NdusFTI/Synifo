@@ -1,6 +1,22 @@
 @extends('layouts.app')
 @section('title', 'Dashboard - Synifo')
 @section('content')
+  <div class="container mt-4">
+    @if(session('alert'))
+      <div class="alert alert-warning alert-dismissible fade show shadow-sm border-0 mb-4" role="alert">
+        <div class="d-flex align-items-center">
+          <i class="bi bi-info-circle-fill mr-3" style="font-size: 1.5rem;"></i>
+          <div class="flex-grow-1">
+            <strong>{{ session('alert') }}</strong>
+          </div>
+          <button type="button" class="close ml-2" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      </div>
+    @endif
+  </div>
+
   <div class="hero-section">
     <div class="container text-center">
       <h1>🗾 Explore Japan</h1>

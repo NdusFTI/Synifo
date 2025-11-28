@@ -40,6 +40,23 @@
                 Users
               </a>
             </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown">
+                <i class="bi bi-person-circle"></i>
+                {{ Auth::user()->name }}
+              </a>
+              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                <a class="dropdown-item" href="{{ route('change.password') }}">
+                  <i class="bi bi-key-fill mr-2"></i>Change Password
+                </a>
+                <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                  @csrf
+                  <button type="submit" class="dropdown-item">
+                    <i class="bi bi-box-arrow-right mr-2"></i>Logout
+                  </button>
+                </form>
+              </div>
+            </li>
           </ul>
         </div>
       </div>

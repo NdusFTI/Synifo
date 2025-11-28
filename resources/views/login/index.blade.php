@@ -15,54 +15,87 @@
     </style>
   </head>
   <body>
-    <div class="container d-flex align-items-center" style="min-height: 100vh;">
-      <div class="row w-100 justify-content-center">
-        <div class="col-md-5 col-lg-4">
-          <div class="card shadow">
+    <div class="container">
+      <div class="row justify-content-center align-items-center" style="min-height: 100vh;">
+        <div class="col-md-6 col-lg-5">
+          <div class="card shadow-sm border-0">
             <div class="card-body p-5">
               <div class="text-center mb-4">
-                <h1 class="h2 text-primary">✈️ Synifo</h1>
+                <div class="display-4 mb-3">🗾</div>
+                <h2 class="font-weight-bold text-primary">Synifo</h2>
+                <p class="text-muted">Masuk ke akun Anda</p>
               </div>
 
-              <form method="POST" action="{{ route('login') }}">
+              @if(session('alert'))
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                  <i class="bi bi-info-circle-fill mr-2"></i>
+                  <strong>{{ session('alert') }}</strong>
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+              @endif
+
+              <form method="POST" action="{{ route('login.post') }}">
                 @csrf
-
+                
                 <div class="form-group">
-                  <label for="email">Email</label>
-                  <input type="email" class="form-control @error('email') is-invalid @enderror" 
-                        id="email" name="email" value="{{ old('email') }}" required autofocus>
-                  @error('email')
-                    <span class="invalid-feedback" role="alert">
-                      <strong>{{ $message }}</strong>
-                    </span>
-                  @enderror
-                </div>
-
-                <div class="form-group">
-                  <label for="password">Password</label>
-                  <input type="password" class="form-control @error('password') is-invalid @enderror" 
-                        id="password" name="password" required>
-                  @error('password')
-                    <span class="invalid-feedback" role="alert">
-                      <strong>{{ $message }}</strong>
-                    </span>
-                  @enderror
-                </div>
-
-                <div class="form-group form-check">
-                  <input type="checkbox" class="form-check-input" id="remember" name="remember">
-                  <label class="form-check-label" for="remember">Ingat Saya</label>
-                </div>
-
-                <button type="submit" class="btn btn-primary btn-block">Masuk</button>
-
-                @if (Route::has('password.request'))
-                  <div class="text-center mt-3">
-                    <a href="{{ route('password.request') }}">Lupa Password?</a>
+                  <label for="email" class="font-weight-semibold">Email</label>
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text bg-white">
+                        <i class="bi bi-envelope"></i>
+                      </span>
+                    </div>
+                    <input type="email" 
+                        class="form-control @error('email') is-invalid @enderror" 
+                        id="email" 
+                        name="email" 
+                        value="{{ old('email') }}" 
+                        placeholder="nama@example.com"
+                        required 
+                        autofocus>
+                    @error('email')
+                      <span class="invalid-feedback">{{ $message }}</span>
+                    @enderror
                   </div>
-                @endif
+                </div>
+
+                <div class="form-group">
+                  <label for="password" class="font-weight-semibold">Password</label>
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text bg-white">
+                        <i class="bi bi-lock"></i>
+                      </span>
+                    </div>
+                    <input type="password" 
+                          class="form-control @error('password') is-invalid @enderror" 
+                          id="password" 
+                          name="password"
+                          placeholder="Masukkan password"
+                          required>
+                    @error('password')
+                      <span class="invalid-feedback">{{ $message }}</span>
+                    @enderror
+                  </div>
+                </div>
+
+                <div class="form-group d-flex justify-content-between align-items-center">
+                  @if (Route::has('password.request'))
+                    <a href="{{ route('password.request') }}" class="text-decoration-none small">Lupa Password?</a>
+                  @endif
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block btn-lg mt-4">
+                  <i class="bi bi-box-arrow-in-right mr-2"></i>Masuk
+                </button>
               </form>
             </div>
+          </div>
+
+          <div class="text-center mt-4">
+            <small class="text-muted">&copy; 2024 Synifo. All rights reserved.</small>
           </div>
         </div>
       </div>

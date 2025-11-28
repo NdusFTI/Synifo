@@ -160,8 +160,4 @@ class PageController extends Controller
         $user->delete();
         return redirect()->route('users.index')->with('success', 'User berhasil dihapus!');
     }
-
-    public function login() {
-        return view("login.index");
-    }
 }
