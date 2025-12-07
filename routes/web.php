@@ -12,8 +12,10 @@
 */
 
 Route::group(['middleware' => ['guest']], function () {
-  Route::get("/", "AuthController@login")->name('login');
+  Route::get("/login", "AuthController@login")->name('login');
   Route::post("/login", "AuthController@loginPost")->name('login.post');
+  Route::get("/", "VisitorController@searchDestination")->name('visitor.search.destination');
+  Route::get("/act", "VisitorController@actSearchDestination")->name('visitor.act');
 });
 
 Route::group(['middleware' => ['auth']], function () {
@@ -21,7 +23,7 @@ Route::group(['middleware' => ['auth']], function () {
   Route::get("/change-password", "AuthController@changePassword")->name('change.password');
   Route::post("/change-password", "AuthController@changePasswordPost")->name('change.password.post');
 
-  Route::get("/dashboard", "PageController@home")->name('home');
+  Route::get("/home", "PageController@home")->name('home');
   Route::get("/destinasi", "PageController@destinasi")->name('destinasi.index');
   Route::get("/destinasi/create", "PageController@destinasiCreate")->name('destinasi.create');
   Route::post("/destinasi", "PageController@destinasiStore")->name('destinasi.store');

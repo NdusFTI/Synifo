@@ -18,7 +18,7 @@ class AuthController extends Controller
         if (!Auth::attempt(['email' => $email, 'password' => $password])) {
             return redirect("/")->with("alert", "Email atau password salah");
         } else {
-            return redirect("/dashboard")->with("alert", "Login berhasil");
+            return redirect("/home")->with("alert", "Login berhasil");
         }
     }
 
@@ -42,6 +42,6 @@ class AuthController extends Controller
             'password' => bcrypt($request->new_password)
         ]);
 
-        return redirect("/dashboard")->with("alert", "Password berhasil diubah");
+        return redirect("/home")->with("alert", "Password berhasil diubah");
     }
 }
