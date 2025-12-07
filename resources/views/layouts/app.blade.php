@@ -16,47 +16,57 @@
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark">
       <div class="container-fluid px-4">
-        <a class="navbar-brand" href="{{ route('home') }}">🗾 Synifo</a>
+        <a class="navbar-brand" href="{{ Auth::check() ? route('home') : route('visitor.search_destination') }}">🗾 Synifo</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-              <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="{{ route('home') }}">
-                <i class="bi bi-house-door"></i>
-                Dashboard
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link {{ request()->is('destinasi*') ? 'active' : '' }}" href="{{ route('destinasi.index') }}">
-                <i class="bi bi-geo-alt"></i>
-                Destinasi
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link {{ request()->is('users*') ? 'active' : '' }}" href="{{ route('users.index') }}">
-                <i class="bi bi-people"></i>
-                Users
-              </a>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown">
-                <i class="bi bi-person-circle"></i>
-                {{ Auth::user()->name }}
-              </a>
-              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-                <a class="dropdown-item" href="{{ route('change.password') }}">
-                  <i class="bi bi-key-fill mr-2"></i>Change Password
+            @auth
+              <li class="nav-item">
+                <a class="nav-link {{ request()->is('home') ? 'active' : '' }}" href="{{ route('home') }}">
+                  <i class="bi bi-house-door"></i>
+                  Dashboard
                 </a>
-                <form action="{{ route('logout') }}" method="POST" class="d-inline">
-                  @csrf
-                  <button type="submit" class="dropdown-item">
-                    <i class="bi bi-box-arrow-right mr-2"></i>Logout
-                  </button>
-                </form>
-              </div>
-            </li>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link {{ request()->is('destinasi*') ? 'active' : '' }}" href="{{ route('destinasi.index') }}">
+                  <i class="bi bi-geo-alt"></i>
+                  Destinasi
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link {{ request()->is('users*') ? 'active' : '' }}" href="{{ route('users.index') }}">
+                  <i class="bi bi-people"></i>
+                  Users
+                </a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown">
+                  <i class="bi bi-person-circle"></i>
+                  {{ Auth::user()->name }}
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                  <a class="dropdown-item" href="{{ route('change.password') }}">
+                    <i class="bi bi-key-fill mr-2"></i>Change Password
+                  </a>
+                  <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                    @csrf
+                    <button type="submit" class="dropdown-item">
+                      <i class="bi bi-box-arrow-right mr-2"></i>Logout
+                    </button>
+                  </form>
+                </div>
+              </li>
+            @endauth
+            @guest
+              <li class="nav-item">
+                <a class="nav-link" href="{{ route('login') }}">
+                  <i class="bi bi-box-arrow-in-right"></i>
+                  Login
+                </a>
+              </li>
+            @endguest
           </ul>
         </div>
       </div>

@@ -14,7 +14,7 @@
 Route::group(['middleware' => ['guest']], function () {
   Route::get("/login", "AuthController@login")->name('login');
   Route::post("/login", "AuthController@loginPost")->name('login.post');
-  Route::get("/", "VisitorController@searchDestination")->name('visitor.search.destination');
+  Route::get("/", "VisitorController@searchDestination")->name('visitor.search_destination');
   Route::get("/act", "VisitorController@actSearchDestination")->name('visitor.act');
 });
 

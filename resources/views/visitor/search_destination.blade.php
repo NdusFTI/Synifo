@@ -18,26 +18,20 @@
     <!-- Search Bar -->
     <div class="card mb-4">
       <div class="card-body">
-        <form action="{{ route('visitor.search_destination') }}" method="GET">
-          <div class="input-group">
-            <input type="text" 
-                  class="form-control" 
-                  name="keyword" 
-                  placeholder="Cari destinasi wisata (nama, lokasi, kategori)..." 
-                  value="{{ $keyword ?? '' }}">
-            <div class="input-group-append">
-              <div class="btn-group" role="group" aria-label="Search actions">
-                <button class="btn btn-primary" type="submit">
-                  <i class="bi bi-search"></i> Cari
-                </button>
-                @if(isset($keyword) && $keyword)
-                  <a href="{{ route('visitor.search_destination') }}" class="btn btn-secondary">
-                    <i class="bi bi-x-circle"></i> Reset
-                  </a>
-                @endif
-              </div>
-            </div>
-          </div>
+        <form action="{{ route('visitor.act') }}" method="GET" class="d-flex align-items-center">
+          <input type="text" 
+                 class="form-control flex-grow-1" 
+                 name="keyword" 
+                 placeholder="Cari destinasi wisata (nama, lokasi, kategori)..." 
+                 value="{{ $keyword ?? '' }}">
+          <button class="btn btn-primary ml-2 flex-shrink-0" type="submit">
+            <i class="bi bi-search"></i> Cari
+          </button>
+          @if(isset($keyword) && $keyword)
+            <a href="{{ route('visitor.search_destination') }}" class="btn btn-secondary ml-2 flex-shrink-0">
+              <i class="bi bi-x-circle"></i> Reset
+            </a>
+          @endif
         </form>
       </div>
     </div>

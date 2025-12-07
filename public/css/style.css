@@ -308,3 +308,8 @@ body {
         max-width: 20%;
     }
 }
+
+.input-group .form-control {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
