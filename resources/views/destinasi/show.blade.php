@@ -14,7 +14,7 @@
         @endauth
         @guest
           <li class="breadcrumb-item">
-            <a href="{{ route('visitor.search_destination') }}">Destinasi Wisata</a>
+            <a href="{{ route('visitor.search.destination') }}">Destinasi Wisata</a>
           </li>
         @endguest
         <li class="breadcrumb-item active">{{ $destinasi->nama_destinasi }}</li>

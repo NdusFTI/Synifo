@@ -15,20 +15,19 @@
       </div>
     </div>
 
-    <!-- Search Bar -->
     <div class="card mb-4">
       <div class="card-body">
         <form action="{{ route('visitor.act') }}" method="GET" class="d-flex align-items-center">
           <input type="text" 
-                 class="form-control flex-grow-1" 
-                 name="keyword" 
-                 placeholder="Cari destinasi wisata (nama, lokasi, kategori)..." 
-                 value="{{ $keyword ?? '' }}">
+                class="form-control flex-grow-1" 
+                name="keyword" 
+                placeholder="Cari destinasi wisata (nama, lokasi, kategori)..." 
+                value="{{ $keyword ?? '' }}">
           <button class="btn btn-primary ml-2 flex-shrink-0" type="submit">
             <i class="bi bi-search"></i> Cari
           </button>
           @if(isset($keyword) && $keyword)
-            <a href="{{ route('visitor.search_destination') }}" class="btn btn-secondary ml-2 flex-shrink-0">
+            <a href="{{ route('visitor.search.destination') }}" class="btn btn-secondary ml-2 flex-shrink-0">
               <i class="bi bi-x-circle"></i> Reset
             </a>
           @endif
@@ -113,7 +112,7 @@
             @endif
           </p>
           @if(isset($keyword) && $keyword)
-            <a href="{{ route('visitor.search_destination') }}" class="btn btn-primary mt-3">
+            <a href="{{ route('visitor.search.destination') }}" class="btn btn-primary mt-3">
               <i class="bi bi-arrow-left"></i>
               Kembali ke Semua Destinasi
             </a>

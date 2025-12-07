@@ -16,7 +16,7 @@
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark">
       <div class="container-fluid px-4">
-        <a class="navbar-brand" href="{{ Auth::check() ? route('home') : route('visitor.search_destination') }}">🗾 Synifo</a>
+        <a class="navbar-brand" href="{{ Auth::check() ? route('home') : route('visitor.search.destination') }}">🗾 Synifo</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
           <span class="navbar-toggler-icon"></span>
         </button>
