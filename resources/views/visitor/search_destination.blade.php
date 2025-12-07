@@ -84,9 +84,9 @@
 
                 <div class="row">
                   <div class="col-12">
-                    <button class="btn btn-sm btn-block btn-action-detail" onclick="showDetail({{ $item->id }})">
+                    <a href="{{ route('destinasi.show', $item->id) }}" class="btn btn-sm btn-block btn-action-detail">
                       <i class="bi bi-eye"></i> Lihat Detail
-                    </button>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -122,77 +122,4 @@
       </div>
     @endif
   </div>
-
-  <!-- Modal Detail -->
-  <div class="modal fade" id="detailModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="modalTitle"></h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body" id="modalBody">
-          <div class="text-center">
-            <div class="spinner-border" role="status">
-              <span class="sr-only">Loading...</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 @endsection
-
-@push('scripts')
-  <script>
-    function showDetail(id) {
-      $('#detailModal').modal('show');
-      
-      // Get destinasi data
-      const destinasi = @json($destinasi);
-      const item = destinasi.find(d => d.id === id);
-      
-      if (item) {
-        $('#modalTitle').text(item.nama_destinasi);
-        
-        let imgHtml = '';
-        if (item.gambar_url) {
-          imgHtml = `<img src="${item.gambar_url}" class="img-fluid mb-3" alt="${item.nama_destinasi}">`;
-        }
-        
-        let starsHtml = '';
-        for (let i = 0; i < Math.floor(item.rating); i++) {
-          starsHtml += '<i class="bi bi-star-fill text-warning"></i>';
-        }
-        if (item.rating - Math.floor(item.rating) >= 0.5) {
-          starsHtml += '<i class="bi bi-star-half text-warning"></i>';
-        }
-        
-        $('#modalBody').html(`
-          ${imgHtml}
-          <div class="mb-3">
-            <span class="badge badge-info">${item.kategori}</span>
-          </div>
-          <div class="mb-3">
-            <strong>Rating:</strong> ${starsHtml} ${item.rating}
-          </div>
-          <div class="mb-3">
-            <strong><i class="bi bi-pin-map"></i> Lokasi:</strong> ${item.lokasi}
-          </div>
-          <div class="mb-3">
-            <strong>Deskripsi:</strong>
-            <p>${item.deskripsi}</p>
-          </div>
-          <div class="mb-3">
-            <strong>Jam Buka:</strong> ${item.jam_buka || '-'}
-          </div>
-          <div class="mb-3">
-            <strong>Harga Tiket:</strong> ${item.harga_tiket || '-'}
-          </div>
-        `);
-      }
-    }
-  </script>
-@endpush

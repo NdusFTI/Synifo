@@ -18,6 +18,8 @@ Route::group(['middleware' => ['guest']], function () {
   Route::get("/act", "VisitorController@actSearchDestination")->name('visitor.act');
 });
 
+Route::get("/destinasi/{id}", "PageController@destinasiShow")->name('destinasi.show');
+
 Route::group(['middleware' => ['auth']], function () {
   Route::post("/logout", "AuthController@logout")->name('logout');
   Route::get("/change-password", "AuthController@changePassword")->name('change.password');
@@ -27,7 +29,6 @@ Route::group(['middleware' => ['auth']], function () {
   Route::get("/destinasi", "PageController@destinasi")->name('destinasi.index');
   Route::get("/destinasi/create", "PageController@destinasiCreate")->name('destinasi.create');
   Route::post("/destinasi", "PageController@destinasiStore")->name('destinasi.store');
-  Route::get("/destinasi/{id}", "PageController@destinasiShow")->name('destinasi.show');
   Route::get("/destinasi/{id}/edit", "PageController@destinasiEdit")->name('destinasi.edit');
   Route::put("/destinasi/{id}", "PageController@destinasiUpdate")->name('destinasi.update');
   Route::delete("/destinasi/{id}", "PageController@destinasiDelete")->name('destinasi.destroy');

@@ -4,12 +4,19 @@
   <div class="container py-4">
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb bg-transparent px-0">
-        <li class="breadcrumb-item">
-          <a href="{{ route('home') }}">Dashboard</a>
-        </li>
-        <li class="breadcrumb-item">
-          <a href="{{ route('destinasi.index') }}">Destinasi</a>
-        </li>
+        @auth
+          <li class="breadcrumb-item">
+            <a href="{{ route('home') }}">Dashboard</a>
+          </li>
+          <li class="breadcrumb-item">
+            <a href="{{ route('destinasi.index') }}">Destinasi</a>
+          </li>
+        @endauth
+        @guest
+          <li class="breadcrumb-item">
+            <a href="{{ route('visitor.search_destination') }}">Destinasi Wisata</a>
+          </li>
+        @endguest
         <li class="breadcrumb-item active">{{ $destinasi->nama_destinasi }}</li>
       </ol>
     </nav>
