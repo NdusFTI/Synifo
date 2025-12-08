@@ -59,14 +59,6 @@
                 </div>
               </li>
             @endauth
-            @guest
-              <li class="nav-item">
-                <a class="nav-link" href="{{ route('login') }}">
-                  <i class="bi bi-box-arrow-in-right"></i>
-                  Login
-                </a>
-              </li>
-            @endguest
           </ul>
         </div>
       </div>

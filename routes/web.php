@@ -25,7 +25,7 @@ Route::group(['middleware' => ['auth']], function () {
   Route::get("/change-password", "AuthController@changePassword")->name('change.password');
   Route::post("/change-password", "AuthController@changePasswordPost")->name('change.password.post');
 
-  Route::get("/home", "PageController@home")->name('home');
+  Route::get("/adminq", "PageController@home")->name('home');
   Route::get("/destinasi", "PageController@destinasi")->name('destinasi.index');
   Route::get("/destinasi/create", "PageController@destinasiCreate")->name('destinasi.create');
   Route::post("/destinasi", "PageController@destinasiStore")->name('destinasi.store');
