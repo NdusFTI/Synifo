@@ -81,10 +81,12 @@
                 <div class="col-md-6">
                   <div class="form-group">
                     <label><strong>Rating</strong> <span class="text-danger">*</span></label>
-                    <input type="number" name="rating" class="form-control"
-                      value="{{ old('rating', $destinasi->rating) }}" min="0" max="5" step="0.1"
-                      required>
-                    <small class="text-muted">Nilai antara 0 - 5</small>
+                    <select name="rating" class="form-control" required>
+                      <option value="">-- Pilih Rating --</option>
+                      @for ($i = 0; $i <= 5; $i += 0.1)
+                        <option value="{{ number_format($i, 2) }}" {{ $destinasi->rating == number_format($i, 2) ? 'selected' : '' }}>{{ $i }}</option>
+                      @endfor
+                    </select>
                     @error('rating')
                       <small class="text-danger d-block">{{ $message }}</small>
                     @enderror

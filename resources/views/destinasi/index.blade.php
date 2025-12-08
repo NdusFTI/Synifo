@@ -21,13 +21,11 @@
           <div class="col-md-4 col-lg-3 col-xl-2-4 mb-4">
             <div class="card destination-card h-100">
               <div class="card-img-wrapper">
-                @if ($item->gambar_url)
-                  <img src="{{ asset($item->gambar_url) }}" class="card-img-top" alt="{{ $item->nama_destinasi }}" />
-                @else
-                  <div class="empty-img-placeholder d-flex align-items-center justify-content-center">
-                    <i class="bi bi-image empty-img-icon"></i>
-                  </div>
-                @endif
+                <img src="{{ 
+                  $item->gambar_url
+                    ? asset($item->gambar_url) 
+                    : 'storage/poster/NoImage.png'
+                }}" class="card-img-top" alt="{{ $item->nama_destinasi }}" />
                 <div class="card-badge-overlay">
                   <span class="badge badge-info badge-kategori">
                     {{ $item->kategori }}

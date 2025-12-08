@@ -43,7 +43,11 @@
               </li>
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown">
-                  <i class="bi bi-person-circle"></i>
+                  <img src="{{ 
+                    Auth::user()->photo 
+                      ? asset( Auth::user()->photo)
+                      : 'storage/users/NoImage.png'
+                  }}" alt="User Icon" width="30" height="30" class="rounded-circle mr-2" />
                   {{ Auth::user()->name }}
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
@@ -59,6 +63,14 @@
                 </div>
               </li>
             @endauth
+            @guest
+              <li class="nav-item">
+                <a class="nav-link {{ request()->is('login') ? 'active' : '' }}" href="{{ route('login') }}">
+                  <i class="bi bi-box-arrow-in-right"></i>
+                  Login
+                </a>
+              </li>
+            @endguest
           </ul>
         </div>
       </div>

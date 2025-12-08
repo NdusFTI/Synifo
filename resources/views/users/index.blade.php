@@ -18,13 +18,11 @@
           <div class="col-md-4 col-lg-3 col-xl-2-4 mb-4">
             <div class="card destination-card h-100">
               <div class="card-img-wrapper">
-                @if ($item->photo)
-                  <img src="{{ asset($item->photo) }}" class="card-img-top" alt="{{ $item->name }}" />
-                @else
-                  <div class="empty-img-placeholder d-flex align-items-center justify-content-center">
-                    <i class="bi bi-image empty-img-icon"></i>
-                  </div>
-                @endif
+                <img src="{{ 
+                  $item->photo 
+                    ? asset($item->photo)
+                    : 'storage/users/NoImage.png'
+                }}" class="card-img-top" alt="{{ $item->name }}" />
               </div>
 
               <div class="card-body d-flex flex-column">
