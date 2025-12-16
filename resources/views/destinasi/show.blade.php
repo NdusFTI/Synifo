@@ -28,7 +28,7 @@
             <img src="{{
               $destinasi->gambar_url
                 ? asset($destinasi->gambar_url)
-                : '/storage/poster/NoImage.png'
+                : '/storage/destinasi/NoImage.png'
             }}" alt="{{ $destinasi->nama_destinasi }}" class="img-fluid w-100 show-img" />
           </div>
 

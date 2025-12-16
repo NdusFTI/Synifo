@@ -80,7 +80,7 @@
                       <img src="{{
                         $destinasi->gambar_url
                           ? asset($destinasi->gambar_url)
-                          : 'storage/poster/NoImage.png'
+                          : 'storage/destinasi/NoImage.png'
                       }}" class="card-img-top" alt="{{ $destinasi->nama_destinasi }}" />
                       <div class="card-body">
                         <h5 class="card-title mb-2">

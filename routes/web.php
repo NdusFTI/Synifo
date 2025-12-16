@@ -18,8 +18,6 @@ Route::group(['middleware' => ['guest']], function () {
   Route::get("/act", "VisitorController@actSearchDestination")->name('visitor.act');
 });
 
-Route::get("/destinasi/{id}", "PageController@destinasiShow")->name('destinasi.show');
-
 Route::group(['middleware' => ['auth']], function () {
   Route::post("/logout", "AuthController@logout")->name('logout');
   Route::get("/change-password", "AuthController@changePassword")->name('change.password');
@@ -38,3 +36,5 @@ Route::group(['middleware' => ['auth']], function () {
   Route::post("/users", "PageController@usersStore")->name('users.store');
   Route::delete("/users/{id}", "PageController@usersDelete")->name('users.destroy');
 });
+
+Route::get("/destinasi/{id}", "PageController@destinasiShow")->name('destinasi.show');

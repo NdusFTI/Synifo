@@ -24,7 +24,7 @@
                 <img src="{{ 
                   $item->gambar_url
                     ? asset($item->gambar_url) 
-                    : 'storage/poster/NoImage.png'
+                    : 'storage/destinasi/NoImage.png'
                 }}" class="card-img-top" alt="{{ $item->nama_destinasi }}" />
                 <div class="card-badge-overlay">
                   <span class="badge badge-info badge-kategori">
