@@ -87,17 +87,19 @@
             </button>
           </div>
         </div>
-        @endif @if (session('error'))
-          <div class="container mt-3">
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-              <i class="bi bi-exclamation-triangle"></i>
-              {{ session('error') }}
-              <button type="button" class="close" data-dismiss="alert">
-                <span>&times;</span>
-              </button>
-            </div>
+      @endif 
+      @if (session('error'))
+        <div class="container mt-3">
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle"></i>
+            {{ session('error') }}
+            <button type="button" class="close" data-dismiss="alert">
+              <span>&times;</span>
+            </button>
           </div>
-        @endif @yield('content')
+        </div>
+      @endif 
+      @yield('content')
     </main>
 
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
