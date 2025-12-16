@@ -10,34 +10,36 @@ class PageController extends Controller
 {
     public function home() {
         $destinasi = DestinasiWisata::all();
-        $totalDestinasi = $destinasi->count();
-        $totalLokasi = $destinasi->pluck('lokasi')->unique()->count();
-        $totalKategori = $destinasi->pluck('kategori')->unique()->count();
-        $rataRating = $destinasi->avg('rating');
-        $destinasiPopuler = DestinasiWisata::orderBy('rating', 'desc')->limit(5)->get();
-        
-        $kategoriBadges = $destinasi->groupBy('kategori')->map(function($item, $key) {
-            return [
-                'kategori' => $key,
-                'total' => $item->count()
-            ];
-        })->values();
-        
-        return view("home", compact(
-            'totalDestinasi', 
-            'totalLokasi', 
-            'totalKategori', 
-            'rataRating', 
-            'destinasiPopuler', 
-            'kategoriBadges'
-        ));
+        $kategoriCounts = [];
+        $lokasiList = [];
+        $totalRating = 0;
+
+        foreach($destinasi as $d) {
+            $totalRating += $d->rating;
+            $lokasiList[$d->lokasi] = true;
+            $kategoriCounts[$d->kategori] = ($kategoriCounts[$d->kategori] ?? 0) + 1;
+        }
+
+        $kategoriBadges = [];
+        foreach($kategoriCounts as $kat => $total) {
+            $kategoriBadges[] = ['kategori' => $kat, 'total' => $total];
+        }
+
+        return view("home", [
+            "totalDestinasi" => $destinasi->count(),
+            "totalLokasi" => count($lokasiList),
+            "totalKategori" => count($kategoriCounts),
+            "rataRating" => $destinasi->count() ? $totalRating / $destinasi->count() : 0,
+            "destinasiPopuler" => DestinasiWisata::orderBy('rating', 'desc')->limit(5)->get(),
+            "kategoriBadges" => $kategoriBadges
+        ]);
     }
 
     // Destinasi Methods
 
     public function destinasi() {
         $destinasi = DestinasiWisata::all();
-        return view("destinasi.index", compact('destinasi'));
+        return view("destinasi.index", ["destinasi" => $destinasi]);
     }
 
     public function destinasiCreate() {
@@ -45,15 +47,6 @@ class PageController extends Controller
     }
 
     public function destinasiStore(Request $request) {
-        $request->validate([
-            'nama_destinasi' => 'required',
-            'deskripsi' => 'required',
-            'lokasi' => 'required',
-            'kategori' => 'required',
-            'rating' => 'required|numeric|min:0|max:5',
-            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
-        ]);
-
         $data = $request->all();
         
         if ($request->hasFile('gambar')) {
@@ -69,24 +62,15 @@ class PageController extends Controller
 
     public function destinasiShow($id) {
         $destinasi = DestinasiWisata::findOrFail($id);
-        return view("destinasi.show", compact('destinasi'));
+        return view("destinasi.show", ["destinasi" => $destinasi]);
     }
 
     public function destinasiEdit($id) {
         $destinasi = DestinasiWisata::findOrFail($id);
-        return view("destinasi.edit", compact('destinasi'));
+        return view("destinasi.edit", ["destinasi" => $destinasi]);
     }
 
     public function destinasiUpdate(Request $request, $id) {
-        $request->validate([
-            'nama_destinasi' => 'required',
-            'deskripsi' => 'required',
-            'lokasi' => 'required',
-            'kategori' => 'required',
-            'rating' => 'required|numeric|min:0|max:5',
-            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
-        ]);
-
         $destinasi = DestinasiWisata::findOrFail($id);
         $data = $request->all();
         
@@ -120,7 +104,7 @@ class PageController extends Controller
 
     public function users() {
         $users = User::all();
-        return view("users.index", compact('users'));
+        return view("users.index", ["users" => $users]);
     }
 
     public function usersCreate() {
@@ -128,13 +112,6 @@ class PageController extends Controller
     }
 
     public function usersStore(Request $request) {
-        $this->validate($request, [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
-        ]);
-        
         $data = $request->all();
 
         $data['password'] = bcrypt($data['password']);
