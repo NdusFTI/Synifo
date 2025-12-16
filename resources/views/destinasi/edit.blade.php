@@ -27,7 +27,7 @@
               <div class="form-group">
                 <label><strong>Nama Destinasi</strong> <span class="text-danger">*</span></label>
                 <input type="text" name="nama_destinasi" class="form-control form-control-lg"
-                  value="{{ old('nama_destinasi', $destinasi->nama_destinasi) }}" required>
+                  value="{{ $destinasi->nama_destinasi }}" required>
                 @error('nama_destinasi')
                   <small class="text-danger">{{ $message }}</small>
                 @enderror
@@ -35,7 +35,7 @@
 
               <div class="form-group">
                 <label><strong>Deskripsi</strong> <span class="text-danger">*</span></label>
-                <textarea name="deskripsi" class="form-control" rows="5" required>{{ old('deskripsi', $destinasi->deskripsi) }}</textarea>
+                <textarea name="deskripsi" class="form-control" rows="5" required>{{ $destinasi->deskripsi }}</textarea>
                 @error('deskripsi')
                   <small class="text-danger">{{ $message }}</small>
                 @enderror
@@ -46,7 +46,7 @@
                   <div class="form-group">
                     <label><strong>Lokasi</strong> <span class="text-danger">*</span></label>
                     <input type="text" name="lokasi" class="form-control"
-                      value="{{ old('lokasi', $destinasi->lokasi) }}" required>
+                      value="{{ $destinasi->lokasi }}" required>
                     @error('lokasi')
                       <small class="text-danger">{{ $message }}</small>
                     @enderror
@@ -57,17 +57,17 @@
                     <label><strong>Kategori</strong> <span class="text-danger">*</span></label>
                     <select name="kategori" class="form-control" required>
                       <option value="">-- Pilih Kategori --</option>
-                      <option value="Kuil" {{ old('kategori', $destinasi->kategori) == 'Kuil' ? 'selected' : '' }}>Kuil
+                      <option value="Kuil" {{ $destinasi->kategori == 'Kuil' ? 'selected' : '' }}>Kuil
                       </option>
-                      <option value="Gunung" {{ old('kategori', $destinasi->kategori) == 'Gunung' ? 'selected' : '' }}>
+                      <option value="Gunung" {{ $destinasi->kategori == 'Gunung' ? 'selected' : '' }}>
                         Gunung</option>
-                      <option value="Taman" {{ old('kategori', $destinasi->kategori) == 'Taman' ? 'selected' : '' }}>
+                      <option value="Taman" {{ $destinasi->kategori == 'Taman' ? 'selected' : '' }}>
                         Taman</option>
-                      <option value="Museum" {{ old('kategori', $destinasi->kategori) == 'Museum' ? 'selected' : '' }}>
+                      <option value="Museum" {{ $destinasi->kategori == 'Museum' ? 'selected' : '' }}>
                         Museum</option>
-                      <option value="Pantai" {{ old('kategori', $destinasi->kategori) == 'Pantai' ? 'selected' : '' }}>
+                      <option value="Pantai" {{ $destinasi->kategori == 'Pantai' ? 'selected' : '' }}>
                         Pantai</option>
-                      <option value="Kastil" {{ old('kategori', $destinasi->kategori) == 'Kastil' ? 'selected' : '' }}>
+                      <option value="Kastil" {{ $destinasi->kategori == 'Kastil' ? 'selected' : '' }}>
                         Kastil</option>
                     </select>
                     @error('kategori')

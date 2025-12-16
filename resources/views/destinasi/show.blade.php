@@ -25,14 +25,11 @@
       <div class="col-lg-8 mb-4">
         <div class="card">
           <div class="show-img-wrapper">
-            @if ($destinasi->gambar_url)
-              <img src="{{ asset($destinasi->gambar_url) }}" alt="{{ $destinasi->nama_destinasi }}"
-                class="img-fluid w-100 show-img" />
-            @else
-              <div class="show-empty-img d-flex align-items-center justify-content-center">
-                <i class="bi bi-image show-empty-icon"></i>
-              </div>
-            @endif
+            <img src="{{
+              $destinasi->gambar_url
+                ? asset($destinasi->gambar_url)
+                : '/storage/poster/NoImage.png'
+            }}" alt="{{ $destinasi->nama_destinasi }}" class="img-fluid w-100 show-img" />
           </div>
 
           <div class="card-body">

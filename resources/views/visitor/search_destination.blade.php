@@ -19,10 +19,10 @@
       <div class="card-body">
         <form action="{{ route('visitor.act') }}" method="GET" class="d-flex align-items-center">
           <input type="text" 
-                class="form-control flex-grow-1" 
-                name="keyword" 
-                placeholder="Cari destinasi wisata (nama, lokasi, kategori)..." 
-                value="{{ $keyword ?? '' }}">
+            class="form-control flex-grow-1" 
+            name="keyword" 
+            placeholder="Cari destinasi wisata (nama, lokasi, kategori)..." 
+            value="{{ $keyword ?? '' }}">
           <button class="btn btn-primary ml-2 flex-shrink-0" type="submit">
             <i class="bi bi-search"></i> Cari
           </button>

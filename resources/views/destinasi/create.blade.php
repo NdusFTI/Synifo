@@ -23,8 +23,7 @@
 
               <div class="form-group">
                 <label><strong>Nama Destinasi</strong> <span class="text-danger">*</span></label>
-                <input type="text" name="nama_destinasi" class="form-control form-control-lg"
-                  value="{{ old('nama_destinasi') }}" placeholder="Contoh: Gunung Fuji" required>
+                <input type="text" name="nama_destinasi" class="form-control form-control-lg" placeholder="Contoh: Gunung Fuji" required>
                 @error('nama_destinasi')
                   <small class="text-danger">{{ $message }}</small>
                 @enderror
@@ -32,8 +31,7 @@
 
               <div class="form-group">
                 <label><strong>Deskripsi</strong> <span class="text-danger">*</span></label>
-                <textarea name="deskripsi" class="form-control" rows="5"
-                  placeholder="Ceritakan tentang keindahan dan keunikan destinasi ini..." required>{{ old('deskripsi') }}</textarea>
+                <textarea name="deskripsi" class="form-control" rows="5" placeholder="Ceritakan tentang keindahan dan keunikan destinasi ini..." required></textarea>
                 @error('deskripsi')
                   <small class="text-danger">{{ $message }}</small>
                 @enderror
@@ -43,8 +41,7 @@
                 <div class="col-md-6">
                   <div class="form-group">
                     <label><strong>Lokasi</strong> <span class="text-danger">*</span></label>
-                    <input type="text" name="lokasi" class="form-control" value="{{ old('lokasi') }}"
-                      placeholder="Contoh: Tokyo, Jepang" required>
+                    <input type="text" name="lokasi" class="form-control" placeholder="Contoh: Tokyo, Jepang" required>
                     @error('lokasi')
                       <small class="text-danger">{{ $message }}</small>
                     @enderror
@@ -55,12 +52,12 @@
                     <label><strong>Kategori</strong> <span class="text-danger">*</span></label>
                     <select name="kategori" class="form-control" required>
                       <option value="">-- Pilih Kategori --</option>
-                      <option value="Kuil" {{ old('kategori') == 'Kuil' ? 'selected' : '' }}>Kuil</option>
-                      <option value="Gunung" {{ old('kategori') == 'Gunung' ? 'selected' : '' }}>Gunung</option>
-                      <option value="Taman" {{ old('kategori') == 'Taman' ? 'selected' : '' }}>Taman</option>
-                      <option value="Museum" {{ old('kategori') == 'Museum' ? 'selected' : '' }}>Museum</option>
-                      <option value="Pantai" {{ old('kategori') == 'Pantai' ? 'selected' : '' }}>Pantai</option>
-                      <option value="Kastil" {{ old('kategori') == 'Kastil' ? 'selected' : '' }}>Kastil</option>
+                      <option value="Kuil">Kuil</option>
+                      <option value="Gunung">Gunung</option>
+                      <option value="Taman">Taman</option>
+                      <option value="Museum">Museum</option>
+                      <option value="Pantai">Pantai</option>
+                      <option value="Kastil">Kastil</option>
                     </select>
                     @error('kategori')
                       <small class="text-danger">{{ $message }}</small>
@@ -73,7 +70,7 @@
                 <div class="col-md-6">
                   <div class="form-group">
                     <label><strong>Rating</strong> <span class="text-danger">*</span></label>
-                    <input type="number" name="rating" class="form-control" value="{{ old('rating') }}" min="0"
+                    <input type="number" name="rating" class="form-control" min="0"
                       max="5" step="0.1" placeholder="4.5" required>
                     <small class="text-muted">Nilai antara 0 - 5</small>
                     @error('rating')

@@ -77,14 +77,11 @@
                   <div class="col-md-6 col-lg-4 mb-4">
                     <div class="card destination-card h-100"
                       onclick="window.location.href='{{ route('destinasi.show', $destinasi->id) }}'">
-                      @if ($destinasi->gambar_url)
-                        <img src="{{ asset($destinasi->gambar_url) }}" class="card-img-top"
-                          alt="{{ $destinasi->nama_destinasi }}" />
-                      @else
-                        <div class="empty-img-placeholder d-flex align-items-center justify-content-center">
-                          <i class="bi bi-image empty-img-icon"></i>
-                        </div>
-                      @endif
+                      <img src="{{
+                        $destinasi->gambar_url
+                          ? asset($destinasi->gambar_url)
+                          : 'storage/poster/NoImage.png'
+                      }}" class="card-img-top" alt="{{ $destinasi->nama_destinasi }}" />
                       <div class="card-body">
                         <h5 class="card-title mb-2">
                           {{ $destinasi->nama_destinasi }}
