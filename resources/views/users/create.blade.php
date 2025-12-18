@@ -24,7 +24,7 @@
               <div class="form-group">
                 <label><strong>Nama</strong> <span class="text-danger">*</span></label>
                 <input type="text" name="name" class="form-control form-control-lg"
-                  value="{{ old('name') }}" placeholder="Contoh: John Doe" required>
+                  placeholder="Contoh: John Doe" required>
                 @error('name')
                   <small class="text-danger">{{ $message }}</small>
                 @enderror
@@ -33,7 +33,7 @@
               <div class="form-group">
                 <label><strong>Email</strong> <span class="text-danger">*</span></label>
                 <input type="email" name="email" class="form-control form-control-lg"
-                  value="{{ old('email') }}" placeholder="contoh@email.com" required>
+                  placeholder="contoh@email.com" required>
                 @error('email')
                   <small class="text-danger">{{ $message }}</small>
                 @enderror
