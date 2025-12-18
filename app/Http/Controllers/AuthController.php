@@ -16,15 +16,15 @@ class AuthController extends Controller
         $password = $request->input("password");
 
         if (!Auth::attempt(['email' => $email, 'password' => $password])) {
-            return redirect("/login")->with("alert", "Email atau password salah");
+            return redirect("login")->with("alert", "Email atau password salah");
         } else {
-            return redirect("/admin")->with("alert", "Login berhasil");
+            return redirect("home")->with("alert", "Login berhasil");
         }
     }
 
     public function logout(){
         Auth::logout();
-        return redirect("/login")->with("alert", "Anda telah logout");
+        return redirect("login")->with("alert", "Anda telah logout");
     }
 
     public function changePassword() {
@@ -35,13 +35,13 @@ class AuthController extends Controller
         $user = Auth::user();
 
         if (!Auth::attempt(['email' => $user->email, 'password' => $request->current_password])) {
-            return redirect("/change-password")->with("alert", "Password saat ini salah");
+            return redirect("change.password")->with("alert", "Password saat ini salah");
         }
 
         $user->update([
             'password' => bcrypt($request->new_password)
         ]);
 
-        return redirect("/admin")->with("alert", "Password berhasil diubah");
+        return redirect("home")->with("alert", "Password berhasil diubah");
     }
 }
