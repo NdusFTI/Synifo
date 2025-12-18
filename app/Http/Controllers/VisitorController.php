@@ -11,7 +11,10 @@ class VisitorController extends Controller
     {
         $destinasi = DestinasiWisata::all();
         $keyword = '';
-        return view('visitor.search_destination', compact('destinasi', 'keyword'));
+        return view('visitor.search_destination', [
+            'destinasi' => $destinasi,
+            'keyword' => $keyword
+        ]);
     }
 
     public function actSearchDestination(Request $request)
@@ -23,6 +26,9 @@ class VisitorController extends Controller
             ->orWhere('kategori', 'like', '%' . $keyword . '%')
             ->get();
 
-        return view('visitor.search_destination', compact('destinasi', 'keyword'));
+        return view('visitor.search_destination', [
+            'destinasi' => $destinasi,
+            'keyword' => $keyword
+        ]);
     }
 }
