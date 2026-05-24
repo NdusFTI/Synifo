@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="synifo_purple">#6C63FF</color>
+    <color name="synifo_blue">#4834D4</color>
+    <color name="japan_navy">#2B2D42</color>
+    <color name="japan_gray">#8D99AE</color>
+    <color name="japan_bg">#F8F9FA</color>
+    <color name="yellow_star">#F1C40F</color>
+    <color name="badge_blue">#E3F2FD</color>
+</resources>

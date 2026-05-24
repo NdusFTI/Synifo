@@ -1,78 +1,162 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+# Synifo - Aplikasi Destinasi Wisata Jepang
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+Aplikasi Android untuk menampilkan dan mengelola data destinasi wisata Jepang.
 
-## About Laravel
+## Fitur
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- List destinasi wisata dengan RecyclerView
+- Tambah data destinasi (nama, lokasi, kategori, deskripsi, rating, foto)
+- Simpan gambar dari gallery ke internal storage
+- Database SQLite untuk penyimpanan data
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Tech Stack
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Kotlin
+- SQLite (SQLiteOpenHelper)
+- RecyclerView + CardView
+- Fragment-based navigation (Bottom Navigation)
 
-## Learning Laravel
+## Cara Menjalankan
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+1. Buka project di Android Studio
+2. Sync Gradle
+3. Run di device/emulator (minSdk 28)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## Bug Fix Log
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+### Fix #1 - Crash saat buka list destinasi
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[British Software Development](https://www.britishsoftware.co)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- [UserInsights](https://userinsights.com)
-- [Fragrantica](https://www.fragrantica.com)
-- [SOFTonSOFA](https://softonsofa.com/)
-- [User10](https://user10.com)
-- [Soumettre.fr](https://soumettre.fr/)
-- [CodeBrisk](https://codebrisk.com)
-- [1Forge](https://1forge.com)
-- [TECPRESSO](https://tecpresso.co.jp/)
-- [Runtime Converter](http://runtimeconverter.com/)
-- [WebL'Agence](https://weblagence.com/)
-- [Invoice Ninja](https://www.invoiceninja.com)
-- [iMi digital](https://www.imi-digital.de/)
-- [Earthlink](https://www.earthlink.ro/)
-- [Steadfast Collective](https://steadfastcollective.com/)
-- [We Are The Robots Inc.](https://watr.mx/)
-- [Understand.io](https://www.understand.io/)
-- [Abdel Elrafa](https://abdelelrafa.com)
-- [Hyper Host](https://hyper.host)
-- [Appoly](https://www.appoly.co.uk)
-- [OP.GG](https://op.gg)
+**Masalah:** App crash saat membuka tab Destinasi setelah menambahkan data.
 
-## Contributing
+**Penyebab:** Database schema berubah (ditambah kolom `deskripsi` dan `rating`) tapi database version tidak di-bump. Table di device masih pakai schema lama, sehingga `cursor.getString(4)` crash karena kolom tidak ditemukan.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+**Fix:** Bump database version dari `1` ke `2` di `DatabaseHelper.kt` agar `onUpgrade()` dijalankan dan table di-recreate.
 
-## Code of Conduct
+```kotlin
+// Sebelum
+SQLiteOpenHelper(context, "synifo.db", null, 1)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+// Sesudah
+SQLiteOpenHelper(context, "synifo.db", null, 2)
+```
 
-## Security Vulnerabilities
+### Fix #2 - Crash saat load gambar di RecyclerView
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+**Masalah:** App crash saat menampilkan item destinasi yang memiliki foto.
 
-## License
+**Penyebab:** `setImageURI(Uri.parse(item.foto))` di adapter tidak memiliki error handling. Jika URI invalid atau permission belum di-grant, langsung crash.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+**Fix:** Wrap `setImageURI` dalam `try-catch` di `DestinasiAdapter.kt`.
+
+```kotlin
+if (item.foto.isNotEmpty()) {
+    try {
+        val file = File(item.foto)
+        if (file.exists()) {
+            val bitmap = BitmapFactory.decodeFile(file.absolutePath)
+            holder.imgFoto.setImageBitmap(bitmap)
+        }
+    } catch (e: Exception) {
+        Log.e("DestinasiAdapter", "Gagal load gambar: ${e.message}")
+    }
+}
+```
+
+### Fix #3 - Permission untuk ambil gambar dari gallery
+
+**Masalah:** App crash atau tidak bisa mengambil gambar karena tidak ada permission.
+
+**Penyebab:** Tidak ada deklarasi permission di `AndroidManifest.xml` dan tidak ada runtime permission request.
+
+**Fix:**
+
+1. Tambah permission di `AndroidManifest.xml`:
+
+```xml
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+    android:maxSdkVersion="32" />
+<uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+```
+
+2. Runtime permission check di `FormDestinasi.kt`:
+
+```kotlin
+private fun checkPermission(): Boolean {
+    val perm = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        android.Manifest.permission.READ_MEDIA_IMAGES
+    } else {
+        android.Manifest.permission.READ_EXTERNAL_STORAGE
+    }
+    return ContextCompat.checkSelfPermission(this, perm) == PackageManager.PERMISSION_GRANTED
+}
+```
+
+### Fix #4 - Gambar pilih 2 kali di device Xiaomi/MIUI
+
+**Masalah:** Setelah pilih gambar dari gallery, picker terbuka lagi (harus pilih 2 kali).
+
+**Penyebab:** `ACTION_PICK` di MIUI/Xiaomi membuka 2 layer picker (system chooser lalu gallery).
+
+**Fix:** Ganti ke `ACTION_GET_CONTENT` + `Intent.createChooser` di `FormDestinasi.kt`:
+
+```kotlin
+// Sebelum
+val intent = Intent(Intent.ACTION_PICK)
+intent.type = "image/*"
+startActivityForResult(intent, IMAGE_PICK)
+
+// Sesudah
+val intent = Intent(Intent.ACTION_GET_CONTENT)
+intent.type = "image/*"
+startActivityForResult(Intent.createChooser(intent, "Pilih Gambar"), IMAGE_PICK)
+```
+
+### Fix #5 - Gambar tidak muncul saat render ulang di RecyclerView
+
+**Masalah:** Gambar yang sudah dipilih tidak muncul saat list destinasi dibuka kembali.
+
+**Penyebab:** URI dari `ACTION_PICK` bersifat temporary — permission bisa expired setelah activity selesai.
+
+**Fix:** Copy gambar ke internal storage app saat dipilih, simpan path lokal ke database:
+
+```kotlin
+private fun copyToInternalStorage(uri: Uri): String {
+    val dir = File(filesDir, "images")
+    if (!dir.exists()) dir.mkdirs()
+
+    val fileName = "img_${System.currentTimeMillis()}.jpg"
+    val file = File(dir, fileName)
+
+    contentResolver.openInputStream(uri)?.use { input ->
+        FileOutputStream(file).use { output ->
+            input.copyTo(output)
+        }
+    }
+    return file.absolutePath
+}
+```
+
+Di adapter, load dari file lokal:
+
+```kotlin
+val file = File(item.foto)
+if (file.exists()) {
+    val bitmap = BitmapFactory.decodeFile(file.absolutePath)
+    holder.imgFoto.setImageBitmap(bitmap)
+}
+```
+
+## Alur Permission
+
+```
+User tap "Pilih Gambar"
+  → checkPermission()
+    → Sudah granted? → openGallery()
+    → Belum? → requestPermission()
+      → User approve → openGallery()
+      → User tolak → Toast "Permission ditolak"
+  → User pilih gambar → copyToInternalStorage()
+  → Simpan path lokal ke database
+```
