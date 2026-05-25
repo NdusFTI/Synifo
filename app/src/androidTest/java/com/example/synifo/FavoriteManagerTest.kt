@@ -15,7 +15,7 @@ class FavoriteManagerTest {
     @Before
     fun setup() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
-        context.getSharedPreferences("synifo_favorites", 0).edit().clear().commit()
+        DatabaseHelper(context).writableDatabase.execSQL("DELETE FROM favorites")
         favManager = FavoriteManager(context)
     }
 
