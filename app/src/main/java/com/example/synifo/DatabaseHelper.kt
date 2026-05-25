@@ -5,20 +5,9 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
 class DatabaseHelper(context: Context) :
-    SQLiteOpenHelper(context, "synifo.db", null, 4) {
+    SQLiteOpenHelper(context, "synifo.db", null, 5) {
 
     override fun onCreate(db: SQLiteDatabase) {
-        db.execSQL("""
-            CREATE TABLE destinasi(
-                id TEXT PRIMARY KEY,
-                nama TEXT,
-                lokasi TEXT,
-                kategori TEXT,
-                deskripsi TEXT,
-                rating TEXT,
-                foto TEXT
-            )
-        """)
         db.execSQL("""
             CREATE TABLE users(
                 username     TEXT PRIMARY KEY,
@@ -27,6 +16,7 @@ class DatabaseHelper(context: Context) :
                 display_name TEXT
             )
         """)
+        db.execSQL("CREATE TABLE favorites(destinasi_id TEXT PRIMARY KEY)")
         seedDefaultUsers(db)
     }
 
@@ -42,6 +32,10 @@ class DatabaseHelper(context: Context) :
             """)
             seedDefaultUsers(db)
         }
+        if (oldVersion < 5) {
+            db.execSQL("DROP TABLE IF EXISTS destinasi")
+            db.execSQL("CREATE TABLE IF NOT EXISTS favorites(destinasi_id TEXT PRIMARY KEY)")
+        }
     }
 
     private fun seedDefaultUsers(db: SQLiteDatabase) {
@@ -49,22 +43,33 @@ class DatabaseHelper(context: Context) :
         db.execSQL("INSERT OR IGNORE INTO users(username,password,role) VALUES('user','user123','user')")
     }
 
-    fun insertData(id: String, nama: String, lokasi: String, kategori: String, deskripsi: String, rating: String, foto: String) {
+    fun addFavorite(destinasiId: String) {
         writableDatabase.execSQL(
-            "INSERT OR REPLACE INTO destinasi(id,nama,lokasi,kategori,deskripsi,rating,foto) VALUES(?,?,?,?,?,?,?)",
-            arrayOf(id, nama, lokasi, kategori, deskripsi, rating, foto)
+            "INSERT OR IGNORE INTO favorites(destinasi_id) VALUES(?)", arrayOf(destinasiId)
         )
     }
 
-    fun updateData(id: String, nama: String, lokasi: String, kategori: String, deskripsi: String, rating: String, foto: String) {
-        writableDatabase.execSQL(
-            "UPDATE destinasi SET nama=?,lokasi=?,kategori=?,deskripsi=?,rating=?,foto=? WHERE id=?",
-            arrayOf(nama, lokasi, kategori, deskripsi, rating, foto, id)
-        )
+    fun removeFavorite(destinasiId: String) {
+        writableDatabase.execSQL("DELETE FROM favorites WHERE destinasi_id=?", arrayOf(destinasiId))
     }
 
-    fun deleteData(id: String) {
-        writableDatabase.execSQL("DELETE FROM destinasi WHERE id=?", arrayOf(id))
+    fun isFavorite(destinasiId: String): Boolean {
+        val cursor = readableDatabase.rawQuery(
+            "SELECT 1 FROM favorites WHERE destinasi_id=?", arrayOf(destinasiId)
+        )
+        val found = cursor.moveToFirst()
+        cursor.close()
+        return found
+    }
+
+    fun getFavoriteIds(): Set<String> {
+        val set = mutableSetOf<String>()
+        val cursor = readableDatabase.rawQuery("SELECT destinasi_id FROM favorites", null)
+        if (cursor.moveToFirst()) {
+            do { set.add(cursor.getString(0)) } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return set
     }
 
     fun validateUser(username: String, password: String): String? {
@@ -101,23 +106,4 @@ class DatabaseHelper(context: Context) :
         )
     }
 
-    fun getAllData(): List<Destinasi> {
-        val list = mutableListOf<Destinasi>()
-        val cursor = readableDatabase.rawQuery("SELECT * FROM destinasi", null)
-        if (cursor.moveToFirst()) {
-            do {
-                list.add(Destinasi(
-                    cursor.getString(0),
-                    cursor.getString(1),
-                    cursor.getString(2),
-                    cursor.getString(3),
-                    cursor.getString(4),
-                    cursor.getString(5),
-                    cursor.getString(6)
-                ))
-            } while (cursor.moveToNext())
-        }
-        cursor.close()
-        return list
-    }
 }

@@ -92,12 +92,10 @@ class DetailDestinasiActivity : AppCompatActivity() {
     private fun hapusDestinasi(destinasi: Destinasi) {
         apiService.deleteDestinasi(destinasi.id).enqueue(object : Callback<Destinasi> {
             override fun onFailure(call: Call<Destinasi>, t: Throwable) {
-                DatabaseHelper(this@DetailDestinasiActivity).deleteData(destinasi.id)
-                Toast.makeText(this@DetailDestinasiActivity, "Dihapus lokal (API gagal)", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@DetailDestinasiActivity, "Gagal menghapus (API error)", Toast.LENGTH_SHORT).show()
                 finish()
             }
             override fun onResponse(call: Call<Destinasi>, response: Response<Destinasi>) {
-                DatabaseHelper(this@DetailDestinasiActivity).deleteData(destinasi.id)
                 Toast.makeText(this@DetailDestinasiActivity, "Destinasi berhasil dihapus", Toast.LENGTH_SHORT).show()
                 finish()
             }

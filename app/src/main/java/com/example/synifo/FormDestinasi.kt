@@ -29,7 +29,6 @@ class FormDestinasi : AppCompatActivity() {
 
     @Inject lateinit var apiService: ApiService
 
-    lateinit var db: DatabaseHelper
     lateinit var imgFoto: ImageView
     lateinit var btnFoto: Button
     var fotoPath: String = ""
@@ -70,8 +69,6 @@ class FormDestinasi : AppCompatActivity() {
         val btnSimpan  = findViewById<Button>(R.id.btnSimpan)
         btnFoto = findViewById(R.id.btnPilihFoto)
         imgFoto = findViewById(R.id.imgFoto)
-        db = DatabaseHelper(this)
-
         spLokasi.adapter   = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, lokasiOptions)
         spKategori.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, kategoriOptions)
 
@@ -114,11 +111,9 @@ class FormDestinasi : AppCompatActivity() {
                     deskripsi = deskripsi, rating = rating, foto = fotoPath)
                 apiService.updateDestinasi(existing.id, updated).enqueue(object : Callback<Destinasi> {
                     override fun onFailure(call: Call<Destinasi>, t: Throwable) {
-                        db.updateData(existing.id, nama, lokasi, kategori, deskripsi, rating, fotoPath)
-                        selesai(btnSimpan, "Diperbarui lokal (API gagal)")
+                        selesai(btnSimpan, "Gagal memperbarui (API error)")
                     }
                     override fun onResponse(call: Call<Destinasi>, response: Response<Destinasi>) {
-                        db.updateData(existing.id, nama, lokasi, kategori, deskripsi, rating, fotoPath)
                         selesai(btnSimpan, "Data berhasil diperbarui")
                     }
                 })
@@ -126,12 +121,9 @@ class FormDestinasi : AppCompatActivity() {
                 val baru = Destinasi("", nama, lokasi, kategori, deskripsi, rating, fotoPath)
                 apiService.tambahDestinasi(baru).enqueue(object : Callback<Destinasi> {
                     override fun onFailure(call: Call<Destinasi>, t: Throwable) {
-                        db.insertData("", nama, lokasi, kategori, deskripsi, rating, fotoPath)
-                        selesai(btnSimpan, "Disimpan lokal (API gagal)")
+                        selesai(btnSimpan, "Gagal menyimpan (API error)")
                     }
                     override fun onResponse(call: Call<Destinasi>, response: Response<Destinasi>) {
-                        val newId = response.body()?.id ?: ""
-                        db.insertData(newId, nama, lokasi, kategori, deskripsi, rating, fotoPath)
                         selesai(btnSimpan, "Data berhasil disimpan")
                     }
                 })
