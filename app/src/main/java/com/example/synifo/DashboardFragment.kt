@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
@@ -48,6 +49,11 @@ class DashboardFragment : Fragment() {
                 intent.putExtra("destinasi", d)
                 startActivity(intent)
             }
+        }
+
+        view.findViewById<TextView>(R.id.tvLihatSemua).setOnClickListener {
+            requireActivity().findViewById<BottomNavigationView>(R.id.bottom_navigation)
+                .selectedItemId = R.id.nav_destinasi
         }
     }
 
