@@ -2,6 +2,12 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="FavoriteManagerTest">
+        <State />
+      </entry>
+      <entry key="SessionManagerTest">
+        <State />
+      </entry>
       <entry key="app">
         <State />
       </entry>
