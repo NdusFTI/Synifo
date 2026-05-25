@@ -15,7 +15,7 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideRetrofit(): Retrofit = Retrofit.Builder()
-        .baseUrl("https://api.npoint.io/")
+        .baseUrl("https://6a13a6dd6c7db8aac0533f18.mockapi.io/api/v1/")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 

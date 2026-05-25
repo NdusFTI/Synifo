@@ -5,7 +5,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Destinasi(
-    val id: Int,
+    val id: String,
     val nama: String,
     val lokasi: String,
     val kategori: String,

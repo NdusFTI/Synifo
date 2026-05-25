@@ -235,12 +235,14 @@
                             android:backgroundTint="@color/synifo_blue"
                             android:layout_marginEnd="8dp" />
                         <ImageButton
+                            android:id="@+id/btnDashboardFavorite"
                             android:layout_width="36dp"
                             android:layout_height="36dp"
                             android:background="?attr/selectableItemBackgroundBorderless"
                             android:src="@drawable/ic_favorite"
                             android:scaleType="centerInside"
                             android:padding="6dp"
+                            android:visibility="gone"
                             app:tint="@color/synifo_purple" />
                     </LinearLayout>
                 </LinearLayout>

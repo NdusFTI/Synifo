@@ -8,16 +8,15 @@ class FavoriteManager(context: Context) {
     private val prefs: SharedPreferences =
         context.getSharedPreferences("synifo_favorites", Context.MODE_PRIVATE)
 
-    fun getFavoriteIds(): Set<Int> {
+    fun getFavoriteIds(): Set<String> {
         val str = prefs.getString("ids", "") ?: ""
         if (str.isEmpty()) return emptySet()
-        return str.split(",").mapNotNull { it.trim().toIntOrNull() }.toSet()
+        return str.split(",").map { it.trim() }.filter { it.isNotEmpty() }.toSet()
     }
 
-    fun isFavorite(id: Int): Boolean = getFavoriteIds().contains(id)
+    fun isFavorite(id: String): Boolean = getFavoriteIds().contains(id)
 
-    /** Returns true if now favorited, false if removed */
-    fun toggleFavorite(id: Int): Boolean {
+    fun toggleFavorite(id: String): Boolean {
         val current = getFavoriteIds().toMutableSet()
         return if (current.contains(id)) {
             current.remove(id)
@@ -30,7 +29,7 @@ class FavoriteManager(context: Context) {
         }
     }
 
-    private fun save(ids: Set<Int>) {
+    private fun save(ids: Set<String>) {
         prefs.edit().putString("ids", ids.joinToString(",")).apply()
     }
 }

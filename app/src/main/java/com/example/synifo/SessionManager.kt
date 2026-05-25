@@ -34,13 +34,11 @@ class SessionManager(context: Context) {
 
     fun logout() {
         val username = getUsername()
-        val role     = getRole()
-        // Simpan password custom & display name supaya tidak hilang saat logout
         val customPwd  = prefs.getString("pwd_$username", null)
-        val customName = prefs.getString("display_name", null)
+        val customName = prefs.getString("display_name_$username", null)
         prefs.edit().clear().apply()
         customPwd?.let  { prefs.edit().putString("pwd_$username", it).apply() }
-        customName?.let { prefs.edit().putString("display_name", it).apply() }
+        customName?.let { prefs.edit().putString("display_name_$username", it).apply() }
     }
 
     fun isLoggedIn(): Boolean = prefs.getBoolean("is_logged_in", false)
@@ -49,11 +47,13 @@ class SessionManager(context: Context) {
     fun getRole(): String        = prefs.getString("role", ROLE_USER) ?: ROLE_USER
     fun isAdmin(): Boolean       = getRole() == ROLE_ADMIN
 
-    fun getDisplayName(): String =
-        prefs.getString("display_name", getUsername()) ?: getUsername()
+    fun getDisplayName(): String {
+        val username = getUsername()
+        return prefs.getString("display_name_$username", username) ?: username
+    }
 
     fun setDisplayName(name: String) {
-        prefs.edit().putString("display_name", name).apply()
+        prefs.edit().putString("display_name_${getUsername()}", name).apply()
     }
 
     fun changePassword(newPassword: String) {

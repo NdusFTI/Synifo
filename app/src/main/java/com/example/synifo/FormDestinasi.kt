@@ -1,39 +1,56 @@
 package com.example.synifo
 
-import android.app.Activity
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
-import android.view.View
 import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
-import okhttp3.ResponseBody
+import okhttp3.MultipartBody
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response as OkHttpResponse
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class FormDestinasi : AppCompatActivity() {
 
     private val TAG = "LifecycleCheck"
+    private val IMGBB_KEY = "b794fc3a08b1d285334c9a557e88c718"
 
-    @Inject
-    lateinit var apiService: ApiService
+    @Inject lateinit var apiService: ApiService
 
     lateinit var db: DatabaseHelper
     lateinit var imgFoto: ImageView
-    lateinit var fotoPath: String
-    val IMAGE_PICK = 100
-    val PERM_REQUEST = 101
+    lateinit var btnFoto: Button
+    var fotoPath: String = ""
+
+    private var editDestinasi: Destinasi? = null
+
+    val lokasiOptions = arrayOf(
+        "Tokyo, Jepang", "Asakusa, Tokyo", "Kyoto, Jepang", "Shizuoka, Jepang",
+        "Osaka, Jepang", "Himeji, Jepang", "Nara, Jepang", "Hiroshima, Jepang", "Kanagawa, Jepang"
+    )
+    val kategoriOptions = arrayOf(
+        "Kuil", "Kastil", "Alam", "Taman", "Pulau", "Monumen", "Ikon Kota", "Menara Ikonik", "Museum"
+    )
+
+    private val pickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        uri?.let {
+            imgFoto.setImageURI(it)
+            val file = copyToInternalStorage(it)
+            uploadToImgBB(file)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,96 +58,128 @@ class FormDestinasi : AppCompatActivity() {
         Log.d(TAG, "FormDestinasi - onCreate: Activity Dibuat")
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = "Tambah Destinasi"
 
-        val etNama = findViewById<EditText>(R.id.etNama)
-        val spLokasi = findViewById<Spinner>(R.id.spLokasi)
+        editDestinasi = intent.getParcelableExtra("destinasi")
+        supportActionBar?.title = if (editDestinasi != null) "Edit Destinasi" else "Tambah Destinasi"
+
+        val etNama     = findViewById<EditText>(R.id.etNama)
+        val spLokasi   = findViewById<Spinner>(R.id.spLokasi)
         val spKategori = findViewById<Spinner>(R.id.spKategori)
-        val etDeskripsi = findViewById<EditText>(R.id.etDeskripsi)
-        val etRating = findViewById<EditText>(R.id.etRating)
-        val btnSimpan = findViewById<Button>(R.id.btnSimpan)
-        val btnFoto = findViewById<Button>(R.id.btnPilihFoto)
-
+        val etDeskripsi= findViewById<EditText>(R.id.etDeskripsi)
+        val etRating   = findViewById<EditText>(R.id.etRating)
+        val btnSimpan  = findViewById<Button>(R.id.btnSimpan)
+        btnFoto = findViewById(R.id.btnPilihFoto)
         imgFoto = findViewById(R.id.imgFoto)
         db = DatabaseHelper(this)
 
-        val lokasi = arrayOf("Tokyo", "Kyoto", "Osaka", "Hiroshima", "Nara")
-        val kategori = arrayOf("Kuil", "Museum", "Gunung", "Pulau", "Taman")
+        spLokasi.adapter   = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, lokasiOptions)
+        spKategori.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, kategoriOptions)
 
-        spLokasi.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, lokasi)
-        spKategori.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, kategori)
+        editDestinasi?.let { d ->
+            etNama.setText(d.nama)
+            etDeskripsi.setText(d.deskripsi)
+            etRating.setText(d.rating)
+            val li = lokasiOptions.indexOf(d.lokasi)
+            if (li >= 0) spLokasi.setSelection(li)
+            val ki = kategoriOptions.indexOf(d.kategori)
+            if (ki >= 0) spKategori.setSelection(ki)
+            if (d.foto.isNotEmpty()) {
+                fotoPath = d.foto
+                Glide.with(this).load(d.foto).into(imgFoto)
+                btnFoto.text = "Ganti Gambar"
+            }
+        }
 
         btnFoto.setOnClickListener {
-            if (checkPermission()) openGallery() else requestPermission()
+            pickImage.launch("image/*")
         }
 
         btnSimpan.setOnClickListener {
-            val nama = etNama.text.toString().trim()
-            val lokasiValue = spLokasi.selectedItem.toString()
-            val kategoriValue = spKategori.selectedItem.toString()
+            val nama      = etNama.text.toString().trim()
+            val lokasi    = spLokasi.selectedItem.toString()
+            val kategori  = spKategori.selectedItem.toString()
             val deskripsi = etDeskripsi.text.toString().trim()
-            val rating = etRating.text.toString().trim()
+            val rating    = etRating.text.toString().trim()
 
-            if (nama.isEmpty()) {
-                etNama.error = "Nama tidak boleh kosong"
-                return@setOnClickListener
-            }
-            if (rating.isEmpty()) {
-                etRating.error = "Rating tidak boleh kosong"
-                return@setOnClickListener
-            }
-
-            val fotoToSave = if (::fotoPath.isInitialized) fotoPath else ""
+            if (nama.isEmpty())   { etNama.error = "Nama tidak boleh kosong"; return@setOnClickListener }
+            if (rating.isEmpty()) { etRating.error = "Rating tidak boleh kosong"; return@setOnClickListener }
+            if (!btnFoto.isEnabled) { Toast.makeText(this, "Tunggu upload foto selesai", Toast.LENGTH_SHORT).show(); return@setOnClickListener }
 
             btnSimpan.isEnabled = false
             btnSimpan.text = "Menyimpan..."
 
-            simpanKeApi(nama, lokasiValue, kategoriValue, deskripsi, rating, fotoToSave, btnSimpan)
-        }
-    }
-
-    private fun simpanKeApi(
-        nama: String, lokasi: String, kategori: String,
-        deskripsi: String, rating: String, foto: String,
-        btnSimpan: Button
-    ) {
-        apiService.getDestinasi().enqueue(object : Callback<List<Destinasi>> {
-            override fun onFailure(call: Call<List<Destinasi>>, t: Throwable) {
-                Log.e(TAG, "Gagal fetch sebelum simpan: ${t.message}")
-                // Tetap simpan ke SQLite meski API gagal
-                simpanKeDb(nama, lokasi, kategori, deskripsi, rating, foto)
-                selesai(btnSimpan, "Disimpan lokal (API tidak tersedia)")
-            }
-
-            override fun onResponse(call: Call<List<Destinasi>>, response: Response<List<Destinasi>>) {
-                val currentList = response.body()?.toMutableList() ?: mutableListOf()
-                val newId = (currentList.maxOfOrNull { it.id } ?: 0) + 1
-
-                // foto di API kosong — local file path tidak bisa diakses device lain
-                val newItem = Destinasi(newId, nama, lokasi, kategori, deskripsi, rating, "")
-
-                currentList.add(newItem)
-
-                apiService.updateDestinasi(currentList).enqueue(object : Callback<ResponseBody> {
-                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                        Log.e(TAG, "Gagal PUT ke API: ${t.message}")
-                        simpanKeDb(nama, lokasi, kategori, deskripsi, rating, foto)
-                        selesai(btnSimpan, "Disimpan lokal (gagal update API)")
+            val existing = editDestinasi
+            if (existing != null) {
+                val updated = existing.copy(nama = nama, lokasi = lokasi, kategori = kategori,
+                    deskripsi = deskripsi, rating = rating, foto = fotoPath)
+                apiService.updateDestinasi(existing.id, updated).enqueue(object : Callback<Destinasi> {
+                    override fun onFailure(call: Call<Destinasi>, t: Throwable) {
+                        db.updateData(existing.id, nama, lokasi, kategori, deskripsi, rating, fotoPath)
+                        selesai(btnSimpan, "Diperbarui lokal (API gagal)")
                     }
-
-                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                        Log.d(TAG, "PUT API sukses: ${response.code()}")
-                        simpanKeDb(nama, lokasi, kategori, deskripsi, rating, foto)
-                        selesai(btnSimpan, "Data berhasil disimpan ke API")
+                    override fun onResponse(call: Call<Destinasi>, response: Response<Destinasi>) {
+                        db.updateData(existing.id, nama, lokasi, kategori, deskripsi, rating, fotoPath)
+                        selesai(btnSimpan, "Data berhasil diperbarui")
+                    }
+                })
+            } else {
+                val baru = Destinasi("", nama, lokasi, kategori, deskripsi, rating, fotoPath)
+                apiService.tambahDestinasi(baru).enqueue(object : Callback<Destinasi> {
+                    override fun onFailure(call: Call<Destinasi>, t: Throwable) {
+                        db.insertData("", nama, lokasi, kategori, deskripsi, rating, fotoPath)
+                        selesai(btnSimpan, "Disimpan lokal (API gagal)")
+                    }
+                    override fun onResponse(call: Call<Destinasi>, response: Response<Destinasi>) {
+                        val newId = response.body()?.id ?: ""
+                        db.insertData(newId, nama, lokasi, kategori, deskripsi, rating, fotoPath)
+                        selesai(btnSimpan, "Data berhasil disimpan")
                     }
                 })
             }
-        })
+        }
     }
 
-    private fun simpanKeDb(nama: String, lokasi: String, kategori: String,
-                           deskripsi: String, rating: String, foto: String) {
-        db.insertData(nama, lokasi, kategori, deskripsi, rating, foto)
+    private fun uploadToImgBB(file: File) {
+        btnFoto.isEnabled = false
+        btnFoto.text = "Mengupload..."
+
+        val base64 = Base64.encodeToString(file.readBytes(), Base64.DEFAULT)
+        val body = MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("image", base64)
+            .build()
+        val request = Request.Builder()
+            .url("https://api.imgbb.com/1/upload?key=$IMGBB_KEY")
+            .post(body)
+            .build()
+
+        OkHttpClient().newCall(request).enqueue(object : okhttp3.Callback {
+            override fun onFailure(call: okhttp3.Call, e: IOException) {
+                runOnUiThread {
+                    btnFoto.isEnabled = true
+                    btnFoto.text = "Pilih Gambar"
+                    Toast.makeText(this@FormDestinasi, "Upload gagal: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+            override fun onResponse(call: okhttp3.Call, resp: OkHttpResponse) {
+                val responseBody = resp.body()?.string() ?: ""
+                try {
+                    val url = JSONObject(responseBody).getJSONObject("data").getString("url")
+                    fotoPath = url
+                    runOnUiThread {
+                        btnFoto.isEnabled = true
+                        btnFoto.text = "Ganti Gambar"
+                        Glide.with(this@FormDestinasi).load(url).into(imgFoto)
+                    }
+                } catch (e: Exception) {
+                    runOnUiThread {
+                        btnFoto.isEnabled = true
+                        btnFoto.text = "Pilih Gambar"
+                        Toast.makeText(this@FormDestinasi, "Upload gagal, coba lagi", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        })
     }
 
     private fun selesai(btnSimpan: Button, pesan: String) {
@@ -140,65 +189,21 @@ class FormDestinasi : AppCompatActivity() {
         }
     }
 
-    private fun checkPermission(): Boolean {
-        val perm = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-            android.Manifest.permission.READ_MEDIA_IMAGES
-        else android.Manifest.permission.READ_EXTERNAL_STORAGE
-        return ContextCompat.checkSelfPermission(this, perm) == PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun requestPermission() {
-        val perm = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-            android.Manifest.permission.READ_MEDIA_IMAGES
-        else android.Manifest.permission.READ_EXTERNAL_STORAGE
-        ActivityCompat.requestPermissions(this, arrayOf(perm), PERM_REQUEST)
-    }
-
-    private fun openGallery() {
-        val intent = Intent(Intent.ACTION_GET_CONTENT)
-        intent.type = "image/*"
-        startActivityForResult(Intent.createChooser(intent, "Pilih Gambar"), IMAGE_PICK)
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == PERM_REQUEST && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            openGallery()
-        } else {
-            Toast.makeText(this, "Permission ditolak", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == IMAGE_PICK && resultCode == Activity.RESULT_OK) {
-            val uri: Uri? = data?.data
-            if (uri != null) {
-                imgFoto.setImageURI(uri)
-                fotoPath = copyToInternalStorage(uri)
-            }
-        }
-    }
-
-    private fun copyToInternalStorage(uri: Uri): String {
+    private fun copyToInternalStorage(uri: android.net.Uri): File {
         val dir = File(filesDir, "images")
         if (!dir.exists()) dir.mkdirs()
-        val fileName = "img_${System.currentTimeMillis()}.jpg"
-        val file = File(dir, fileName)
+        val file = File(dir, "img_${System.currentTimeMillis()}.jpg")
         contentResolver.openInputStream(uri)?.use { input ->
             FileOutputStream(file).use { output -> input.copyTo(output) }
         }
-        return file.absolutePath
+        return file
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        onBackPressedDispatcher.onBackPressed()
-        return true
-    }
+    override fun onSupportNavigateUp(): Boolean { onBackPressedDispatcher.onBackPressed(); return true }
 
-    override fun onStart() { super.onStart(); Log.d(TAG, "FormDestinasi - onStart") }
-    override fun onResume() { super.onResume(); Log.d(TAG, "FormDestinasi - onResume") }
-    override fun onPause() { super.onPause(); Log.d(TAG, "FormDestinasi - onPause") }
-    override fun onStop() { super.onStop(); Log.d(TAG, "FormDestinasi - onStop") }
+    override fun onStart()   { super.onStart();   Log.d(TAG, "FormDestinasi - onStart") }
+    override fun onResume()  { super.onResume();  Log.d(TAG, "FormDestinasi - onResume") }
+    override fun onPause()   { super.onPause();   Log.d(TAG, "FormDestinasi - onPause") }
+    override fun onStop()    { super.onStop();    Log.d(TAG, "FormDestinasi - onStop") }
     override fun onDestroy() { super.onDestroy(); Log.d(TAG, "FormDestinasi - onDestroy") }
 }
